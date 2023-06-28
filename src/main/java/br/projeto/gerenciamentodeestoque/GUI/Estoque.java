@@ -8,6 +8,7 @@ import br.projeto.gerenciamentodeestoque.modeltable.ProdutoModelTables;
 import java.util.List;
 import java.util.ArrayList;
 import br.projeto.gerenciamentodeestoque.model.Produto;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -21,20 +22,44 @@ public class Estoque extends javax.swing.JDialog {
      */
     public Estoque(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+  
         initComponents();
+        desabilita();
         setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
         
+        
+        
+    }
+    
+    private void desabilita(){
         jButtonAlterar.setEnabled(false);
         jButtonExcluir.setEnabled(false);
+        jButtonSalvar.setEnabled(false);
         jTextFieldAlterarItem.setEditable(false);
         jTextFieldAlterarPrecoCompra.setEditable(false);
         jTextFieldAlterarPrecoVenda.setEditable(false);
         jTextFieldAlterarQtd.setEditable(false);
-        
     }
     
+    private void reseta(){
+        
+        jTextFieldAlterarItem.setText(null);
+        jTextFieldAlterarPrecoCompra.setText(null);
+        jTextFieldAlterarPrecoVenda.setText(null);
+        jTextFieldAlterarQtd.setText(null);
+    }
+    private Produto produtoSelecionado;
+    private void selecionaItem(){
+        try{
+            int row = jTablePesquisa.getSelectedRow();
+            ProdutoModelTables tableModel = (ProdutoModelTables) jTablePesquisa.getModel();
+            produtoSelecionado = tableModel.getAt(row);
+        }catch (Exception e){
+            
+        }
+    }
         
     
 
@@ -65,6 +90,7 @@ public class Estoque extends javax.swing.JDialog {
         jButtonAlterar = new javax.swing.JButton();
         jButtonExcluir = new javax.swing.JButton();
         jButtonVoltar = new javax.swing.JButton();
+        jButtonSalvar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -72,6 +98,11 @@ public class Estoque extends javax.swing.JDialog {
         jLabel1.setText("Gerenciamento de Estoque");
 
         jTablePesquisa.setModel(new br.projeto.gerenciamentodeestoque.modeltable.ProdutoModelTables());
+        jTablePesquisa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTablePesquisaMousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTablePesquisa);
 
         jLabel2.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
@@ -84,10 +115,10 @@ public class Estoque extends javax.swing.JDialog {
         jLabel4.setText("Quantidade:");
 
         jLabel5.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
-        jLabel5.setText("Preço de Compra");
+        jLabel5.setText("Preço de Compra:");
 
         jLabel6.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
-        jLabel6.setText("Preço de Venda");
+        jLabel6.setText("Preço de Venda:");
 
         jButtonPesquisar.setText("Pesquisar");
         jButtonPesquisar.addActionListener(new java.awt.event.ActionListener() {
@@ -97,8 +128,18 @@ public class Estoque extends javax.swing.JDialog {
         });
 
         jButtonAlterar.setText("Alterar");
+        jButtonAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAlterarActionPerformed(evt);
+            }
+        });
 
         jButtonExcluir.setText("Excluir");
+        jButtonExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonExcluirActionPerformed(evt);
+            }
+        });
 
         jButtonVoltar.setText("Voltar");
         jButtonVoltar.addActionListener(new java.awt.event.ActionListener() {
@@ -107,57 +148,66 @@ public class Estoque extends javax.swing.JDialog {
             }
         });
 
+        jButtonSalvar.setText("Salvar");
+        jButtonSalvar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSalvarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(182, 182, 182)
+                                    .addComponent(jLabel1))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jTextFieldPesquisarPorItem, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(65, 65, 65)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jButtonExcluir)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jButtonVoltar))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jButtonPesquisar)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jButtonAlterar)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jButtonSalvar)))))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(182, 182, 182)
-                                .addComponent(jLabel1))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
+                                .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldPesquisarPorItem, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(110, 110, 110)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jButtonPesquisar)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButtonAlterar))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jButtonExcluir)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jButtonVoltar)))))
+                                .addComponent(jTextFieldAlterarQtd))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldAlterarItem, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldAlterarPrecoCompra))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldAlterarPrecoVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldAlterarQtd))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldAlterarItem, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldAlterarPrecoCompra))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldAlterarPrecoVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(49, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,12 +219,13 @@ public class Estoque extends javax.swing.JDialog {
                     .addComponent(jLabel2)
                     .addComponent(jTextFieldPesquisarPorItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonPesquisar)
-                    .addComponent(jButtonAlterar))
+                    .addComponent(jButtonAlterar)
+                    .addComponent(jButtonSalvar))
                 .addGap(4, 4, 4)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonExcluir)
                     .addComponent(jButtonVoltar))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(58, 58, 58)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jTextFieldAlterarItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -198,7 +249,7 @@ public class Estoque extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(20, 20, 20))
+                .addGap(11, 11, 11))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -214,7 +265,7 @@ public class Estoque extends javax.swing.JDialog {
         // TODO add your handling code here:
         ProdutoDAO produtoDao = new ProdutoDAO();
         List<Produto> lista = new ArrayList<Produto>();
-        
+        jButtonAlterar.setEnabled(true);
         ProdutoModelTables modelTable = (ProdutoModelTables) jTablePesquisa.getModel();
         try{
             if(jTextFieldPesquisarPorItem.getText().equals("")){
@@ -236,6 +287,79 @@ public class Estoque extends javax.swing.JDialog {
         dispose();
         new Home(null, true);
     }//GEN-LAST:event_jButtonVoltarActionPerformed
+
+    private void jTablePesquisaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTablePesquisaMousePressed
+        // TODO add your handling code here:
+        selecionaItem();
+    }//GEN-LAST:event_jTablePesquisaMousePressed
+    private void habilitar(){
+            jButtonPesquisar.setEnabled(true);
+            jButtonVoltar.setEnabled(true);
+            jButtonExcluir.setEnabled(true);
+            jButtonSalvar.setEnabled(true);
+            jTextFieldAlterarItem.setEditable(true);
+            jTextFieldAlterarPrecoCompra.setEditable(true);
+            jTextFieldAlterarPrecoVenda.setEditable(true);
+            jTextFieldAlterarQtd.setEditable(true);
+            
+            jTextFieldAlterarItem.setEnabled(true);
+            jTextFieldAlterarPrecoCompra.setEnabled(true);
+            jTextFieldAlterarPrecoVenda.setEnabled(true);
+            jTextFieldAlterarQtd.setEnabled(true);
+    }
+    private void jButtonAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAlterarActionPerformed
+        // TODO add your handling code here:
+        if(produtoSelecionado != null){
+            
+            habilitar();
+            jTextFieldAlterarItem.setText(produtoSelecionado.getItem());
+           
+            jTextFieldAlterarPrecoCompra.setText(String.valueOf(produtoSelecionado.getPrecoCompra()));
+            jTextFieldAlterarPrecoVenda.setText(String.valueOf(produtoSelecionado.getPrecoVenda()));
+            jTextFieldAlterarQtd.setText(String.valueOf(produtoSelecionado.getQtd()));
+        }else {
+            JOptionPane.showMessageDialog(this, "Nenhum Produto Selecionado", getTitle(), JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_jButtonAlterarActionPerformed
+
+    private void jButtonSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSalvarActionPerformed
+        // TODO add your handling code here:
+         
+            
+            jButtonExcluir.setEnabled(false);
+            jTextFieldAlterarItem.setEnabled(false);
+            jTextFieldAlterarPrecoCompra.setEnabled(false);
+            jTextFieldAlterarPrecoVenda.setEnabled(false);
+            jTextFieldAlterarQtd.setEnabled(false);
+            ProdutoDAO produtoDAO = new ProdutoDAO();
+            if(jTextFieldAlterarItem.getText() == null 
+              || "".equals(jTextFieldAlterarItem.getText())
+                    ||(jTextFieldAlterarPrecoCompra.getText() == null)
+                    || "".equals(jTextFieldAlterarPrecoCompra.getText())
+                    || (jTextFieldAlterarPrecoVenda.getText() == null)
+                    || "".equals(jTextFieldAlterarPrecoVenda.getText())
+                    || (jTextFieldAlterarQtd.getText() == null)
+                    || "".equals(jTextFieldAlterarQtd.getText())){
+                JOptionPane.showMessageDialog(this, 
+                       "Erro no update", 
+                        this.getTitle(), 
+                        JOptionPane.INFORMATION_MESSAGE);
+                jTextFieldAlterarItem.requestFocus();
+            }else {
+               produtoSelecionado.setItem(jTextFieldAlterarItem.getText());
+               produtoSelecionado.setPrecoCompra(Double.parseDouble(jTextFieldAlterarPrecoCompra.getText()));
+               produtoSelecionado.setPrecoVenda(Double.parseDouble(jTextFieldAlterarPrecoVenda.getText()));
+               produtoSelecionado.setQtd(Integer.parseInt(jTextFieldAlterarQtd.getText()));
+               reseta();
+            }
+    }//GEN-LAST:event_jButtonSalvarActionPerformed
+
+    private void jButtonExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExcluirActionPerformed
+        ProdutoDAO produtoDAO = new ProdutoDAO();
+        if(produtoSelecionado != null){
+            produtoDAO.excluir(produtoSelecionado);
+        }
+    }//GEN-LAST:event_jButtonExcluirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -283,6 +407,7 @@ public class Estoque extends javax.swing.JDialog {
     private javax.swing.JButton jButtonAlterar;
     private javax.swing.JButton jButtonExcluir;
     private javax.swing.JButton jButtonPesquisar;
+    private javax.swing.JButton jButtonSalvar;
     private javax.swing.JButton jButtonVoltar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
